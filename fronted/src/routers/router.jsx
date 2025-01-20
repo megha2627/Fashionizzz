@@ -5,6 +5,7 @@ import CategoryPage from "../pages/category/CategoryPage.jsx";
 import Search from "../pages/search/Search.jsx";
 import ShopPage from "../pages/shop/ShopPage.jsx";
 import SingleProduct from "../pages/shop/productDetails/SingleProduct.jsx";
+import Login from "../components/Login.jsx";
 
 const router = createBrowserRouter([
   {
@@ -34,5 +35,9 @@ const router = createBrowserRouter([
      
     ],
   },
+  {
+    path: "/login",
+    element:<Login/>
+  }
 ]);
 export default router;

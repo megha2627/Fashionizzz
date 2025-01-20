@@ -1,10 +1,16 @@
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import React from "react";
+import { clearCart } from "../../redux/features/cart/cartSlice";
 const OrderSummary = () => {
+  const dispatch=useDispatch();
   const products = useSelector((store) => store.cart.products);
   const { selectedItems, totalPrice, tax, taxRate, grandTotal } = useSelector(
     (store) => store.cart
   );
+  const handleClearCart = () => {
+    dispatch(clearCart());
+    //window.location.reload(); // refresh the page to clear cart state
+  }
 
   return (
     <div className="bg-primary-light mt-5 rounded text-base">
@@ -18,7 +24,13 @@ const OrderSummary = () => {
         <h3 className="font-bold">Grand Total: ${grandTotal.toFixed(2)}</h3>
       </div>
       <div className="px-4 mb-6">
-        <button className="bg-red-500 px-3 py-1.5 text-white mt-2 rounded-md flex justify-between items-center mb-4">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClearCart();
+          }}
+
+          className="bg-red-500 px-3 py-1.5 text-white mt-2 rounded-md flex justify-between items-center mb-4">
           <span className="mr-2">Clear cart</span>
           <i className="ri-delete-bin-7-line"></i>
         </button>
