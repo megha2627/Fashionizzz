@@ -6,6 +6,7 @@ import Search from "../pages/search/Search.jsx";
 import ShopPage from "../pages/shop/ShopPage.jsx";
 import SingleProduct from "../pages/shop/productDetails/SingleProduct.jsx";
 import Login from "../components/Login.jsx";
+import Register from "../components/Register.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,16 +29,19 @@ const router = createBrowserRouter([
         path: "/shop",
         element: <ShopPage />,
       },
-       {
-            path: "/shop/:id",
-         element: <SingleProduct />,
-        }
-     
+      {
+        path: "/shop/:id",
+        element: <SingleProduct />,
+      },
     ],
   },
   {
     path: "/login",
-    element:<Login/>
-  }
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register/>,
+  },
 ]);
 export default router;
