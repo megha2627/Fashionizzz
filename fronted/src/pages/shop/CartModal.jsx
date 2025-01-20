@@ -1,7 +1,19 @@
 import React from "react";
 import OrderSummary from "./OrderSummary";
+import { useDispatch } from "react-redux";
+import { removeFromCart, updateQuantity } from "../../redux/features/cart/cartSlice";
 
 const CartModal = ({ products, isOpen, onClose }) => {
+  const dispatch = useDispatch();
+  const handleQuantity = (type, id) => {
+    const payload = { type, id };
+    dispatch(updateQuantity(payload));
+    
+  }
+  const handleRemove = (e, id) => {
+    e.preventDefault();
+    dispatch(removeFromCart({ id }));
+  }
   return (
     <>
       <div
@@ -55,17 +67,17 @@ const CartModal = ({ products, isOpen, onClose }) => {
                   </div>
                   <div className="flex flex-col items-center mt-2 w-full md:w-auto md:flex-row md:justify-start">
                     <div className="flex items-center justify-center">
-                      <button className="size-6 flex items-center justify-center px-1.5 rounded-full bg-gray-200 text-gray-700 hover:bg-primary hover:text-white ">
+                      <button className="size-6 flex items-center justify-center px-1.5 rounded-full bg-gray-200 text-gray-700 hover:bg-primary hover:text-white " onClick={()=>handleQuantity('decrement', item.id)}>
                         -
                       </button>
                       <span className="px-2 text-center mx-1">
                         {item.quantity}
                       </span>
-                      <button className="size-6 flex items-center justify-center px-1.5 rounded-full bg-gray-200 text-gray-700 hover:bg-primary hover:text-white ">
+                      <button className="size-6 flex items-center justify-center px-1.5 rounded-full bg-gray-200 text-gray-700 hover:bg-primary hover:text-white " onClick={()=>handleQuantity('increment', item.id)}>
                         +
                       </button>
                     </div>
-                    <button className="text-red-500 hover:text-red-800 mt-2 md:mt-0 md:ml-4">
+                    <button className="text-red-500 hover:text-red-800 mt-2 md:mt-0 md:ml-4"  onClick={(e)=>handleRemove(e, item.id)}>
                       Remove
                     </button>
                   </div>
