@@ -1,7 +1,27 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+var cors = require("cors");
+require("dotenv").config();
 const port = process.env.PORT || 3000;
+
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+//console.log(process.env.DB_URL);
+app.use(express.json({ limit: "25mb" }))
+app.use(express.urlencoded({ limit: "25mb" }));
+app.use(cookieParser());
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials:true
+}));
+
+const authRoutes = require('./src/users/user.route');
+app.use('/api/auth',authRoutes);
 
 main()
   .then(() => console.log("mongo db is connected"))
@@ -9,7 +29,7 @@ main()
 
 async function main() {
   await mongoose.connect(
-    "mongodb+srv://meghagupta270505:dMwXYan6SKuT3EP1@lebaba-ecommerce.hclhu.mongodb.net/?retryWrites=true&w=majority&appName=lebaba-ecommerce"
+    process.env.DB_URL
   );
 
   app.get("/", (req, res) => {
