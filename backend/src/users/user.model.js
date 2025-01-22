@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 // Define the schema
 const userSchema = new mongoose.Schema({
@@ -11,6 +12,17 @@ const userSchema = new mongoose.Schema({
   profession: String,
   createdAt: { type: Date, default: Date.now },
 });
+
+userSchema.pre('save', async function (next) {
+    const user = this;
+    if (!user.isModified('password')) return next();
+    const hashedPassword = await bcrypt.hash(user.password,10);
+    user.password = hashedPassword;
+    next();
+})
+userSchema.methods.comparePassword = function (candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+}
 
 // Define the model
 const User = mongoose.model("User", userSchema);
