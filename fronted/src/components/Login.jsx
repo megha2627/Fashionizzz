@@ -21,6 +21,9 @@ const Login = () => {
       }
       try {
         const response = await loginUser(data).unwrap();
+        console.log(response)
+        const { token, user } = response;
+        dispatch(setUser({user}))
         // console.log(response);
         alert("Login Successful")
         navigate("/")
