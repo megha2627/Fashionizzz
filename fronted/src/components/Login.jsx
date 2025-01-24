@@ -1,38 +1,43 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+//import { setUser } from "../redux/features/auth/authSlice";
+
 import { useLoginUserMutation } from "../redux/features/auth/authApi";
 //import { useLoginUserMutation } from "../redux/features/auth/authApi.js";
 
 const Login = () => {
-  const [message, setMessage] = useState("");
-    const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  
-  const dispatch = useDispatch();
-  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation()
   const navigate = useNavigate();
- // console.log(loginUser);
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        const data = {
-            email,password,
-      }
-      try {
-        const response = await loginUser(data).unwrap();
-        console.log(response)
-        const { token, user } = response;
-        dispatch(setUser({user}))
-        // console.log(response);
-        alert("Login Successful")
-        navigate("/")
-      }
-      catch (err) {
-        setMessage("please provide your email and password")
-      }
-       // console.log(data);
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
+  const [loginUser, { isLoading: loginLoading }] = useLoginUserMutation();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const data = {
+      email,
+      password,
+    };
+
+    try {
+      const response = await loginUser(data).unwrap();
+      //const token = response.token;
+      //const user = response.user;
+      // const { user } = response;
+      console.log(response);
+
+      // dispatch(setUser({ user})); // Dispatch setUser action
+      navigate("/");
+      
+    } catch (err) {
+      setMessage("Please provide your email and password");
     }
+  };
   return (
     <div>
       <section className="h-screen flex items-center justify-center">
@@ -69,7 +74,11 @@ const Login = () => {
             </button>
           </form>
           <p className="my-5 italic text-sm text-center ">
-            Don't have an account?<Link to="/register" className="text-red-700 px-1 underline">Register</Link> here.
+            Don't have an account?
+            <Link to="/register" className="text-red-700 px-1 underline">
+              Register
+            </Link>{" "}
+            here.
           </p>
         </div>
       </section>
@@ -78,3 +87,5 @@ const Login = () => {
 };
 
 export default Login;
+
+

@@ -14,6 +14,10 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
+        path: "/register",
+        element: <Register />, // Default route set to Register
+      },
+      {
         path: "/",
         element: <Home />,
       },
@@ -41,7 +45,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <Register/>,
+    element: <Register />,
   },
 ]);
 export default router;

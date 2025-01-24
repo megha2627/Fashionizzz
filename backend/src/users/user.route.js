@@ -1,84 +1,78 @@
+
+
 const express = require("express");
+const router = express.Router();
 const User = require("./user.model");
 const generateToken = require("../middleware/generateToken");
 const verifyToken = require("../middleware/verifyToken");
+require("dotenv").config
 
-const router = express.Router();
-
+// Register endpoint
 router.post("/register", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    const user = new User({ username, email, password });
+    const { email, password, username } = req.body;
+    const user = new User({ email, password, username });
     await user.save();
-
     res.status(201).send({ message: "User registered successfully" });
-  } catch (err) {
-    console.error("Error registering user:", err);
-    res.status(500).send({ message: "Internal server error" });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).send({ message: "Registration failed" });
   }
 });
 
-router.post("/login", async (req, res) => { 
-    const { email, password } = req.body;
-    try {
-        //console.log(email, password);
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(401).send({ message: "Invalid email or password" });
-        }
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) {
-            return res.status(401).send({ message: 'Password not match' })
-        }
-        //const token = await generateToken(user._id);
-        const token = await generateToken(user._id);
-        //res.cookie('token',token)
-        console.log(token);
-      res.cookie('token', token, {
-        httpOnly: true,
-        sameSite:'None',
-        secure:true
-        })
-      res.status(200).send({
-        message: 'logged in successfully', token,user: {
-          _id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          profileImage: user.profileImage,
-          bio: user.bio,
-          profession: user.profession,
-          createdAt: user.createdAt,
-        } })
-    }
-    catch (err) {
-        console.error("Error logging user:", err);
-        res.status(500).send({ message: "error logging user" });
-        
-    }
-    
-
-})
-
-/*router.get("/users",
-  async (req, res) => {
-    //res.send({ message: 'protected users logged' })
+// Login endpoint
+// Login endpoint
+router.post("/login", async (req, res) => {
   try {
-    const users = await User.find({}, "id email role").sort({ createdAt: -1 });
-    res.status(200).send(users);
+    // console.log(req.body)
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    // console.log(user._id)
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).send({ message: "Invalid credentials" });
+    }
+
+    const token = await generateToken(user._id);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true, // Ensure this is true for HTTPS
+      sameSite: "None",
+    });
+    res.status(302).setHeader("Location", "/");
+    res.status(200).send({
+      message: "Logged in successfully",
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        profileImage: user.profileImage,
+        bio: user.bio,
+        profession: user.profession,
+      },
+    });
+    // alert("user login successfull")
+    console.log(user);
+    //res.redirect('/');
+    
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).send({ message: "Failed to fetch users" });
+    console.error("Error logging in:", error);
+    res.status(500).send({ message: "Login failed" });
   }
-});*/
-
-
+});
+// Logout endpoint (optional)
 router.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.status(200).send({ message: "Logged out successfully" });
 });
 
+// all users
 
 router.get("/users", async (req, res) => {
   try {
@@ -90,7 +84,7 @@ router.get("/users", async (req, res) => {
   }
 });
 
-
+// delete a user
 router.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -105,6 +99,7 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
+// update a user role
 router.put("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -120,7 +115,7 @@ router.put("/users/:id", async (req, res) => {
   }
 });
 
-
+// Edit Profile endpoint
 router.patch("/edit-profile", async (req, res) => {
   try {
     // Destructure fields from the request body
@@ -165,9 +160,7 @@ router.patch("/edit-profile", async (req, res) => {
   }
 });
 
-
-
-
-
-
 module.exports = router;
+
+
+
