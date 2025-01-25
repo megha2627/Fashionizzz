@@ -2,6 +2,7 @@ const express = require("express");
 const Products = require("./products.model");
 const Reviews = require("../reviews/reviews.model");
 const verifyToken = require("../middleware/verifyToken");
+const verifyAdmin = require("../middleware/verifyAdmin");
 const router = express.Router();
 //import  verifyToken  from "./middleware/verifyToken";
 
@@ -110,7 +111,7 @@ router.get("/:id", async (req, res) => {
 });
 
 
-router.patch("/update-product/:id",verifyToken, async (req, res) => {
+router.patch("/update-product/:id",verifyToken,verifyAdmin, async (req, res) => {
   try {
     const productId = req.params.id;
     // const { title, content, category } = req.body;
