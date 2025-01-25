@@ -8,6 +8,7 @@ const authApi = createApi({
     baseUrl: `${getBaseUrl()}/api/auth`,
     credentials: "include",
   }),
+  tagTypes: ["User"],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (newUser) => ({
@@ -44,6 +45,14 @@ const authApi = createApi({
         url: "/logout",
         method: "POST",
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(logout());
+        } catch (err) {
+          console.log("Failed to logout:", err);
+        }
+      },
     }),
     getUser: builder.query({
       query: () => ({
