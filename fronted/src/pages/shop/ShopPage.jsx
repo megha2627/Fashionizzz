@@ -87,33 +87,82 @@ const ShopPage = () => {
     applyFilters();
   };
 
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
   if (isLoading) return <div>Loading...</div>
   if(error) return <div>Error loading products..</div>
 
   // Filter by price range
-  
+  const startProduct = (currentPage) - 1 * ProductsPerPage + 1;
+  const endProduct = Math.min(currentPage*ProductsPerPage,totalProducts);
 
     return (
       <>
-        <section className="section__container bg-primary-light" style={{width:'85%'}}>
+        <section
+          className="section__container bg-primary-light"
+          style={{ width: "85%" }}
+        >
           <h2 className="section__header capitalize">ShopPage</h2>
           <p className="section__subheader">
             Browse a diverse range of varities,from chic dresses to versatile
             accessories
           </p>
-            </section>
-            <section className='section__container' style={{paddingLeft:'150px'}}>
-                <div className='flex flex-col md:flex-row md:gap-12 gap-8'>
-            <ShopFiltering filters={filters} filtersState={filtersState} setFiltersState={setFiltersState} clearFilters={clearFilters} />
-                    <div>
-              <h3 className='text-xl font-medium mb-4'>Products Available:{products.length}</h3>
+        </section>
+        <section
+          className="section__container"
+          style={{ paddingLeft: "150px" }}
+        >
+          <div className="flex flex-col md:flex-row md:gap-12 gap-8">
+            <ShopFiltering
+              filters={filters}
+              filtersState={filtersState}
+              setFiltersState={setFiltersState}
+              clearFilters={clearFilters}
+            />
+            <div>
+              <h3 className="text-xl font-medium mb-4">
+               Showing products
+              </h3>
               <ProductCards products={products} />
-                    </div>
-                </div>
-
-            </section>
-        
-       
+              <div className="mt-6 flex justify-center">
+                <button
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md mr-2"
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                >
+                  Previous
+                </button>
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`px-4 py-2 ${
+                      currentPage === index + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-300 text-gray-700"
+                    }`}
+                    rounded-md
+                    mx-2
+                    // onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-3"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
       </>
     );
   
