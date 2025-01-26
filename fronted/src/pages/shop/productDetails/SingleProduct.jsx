@@ -2,9 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import RatingStars from "../../../components/RatingStars";
+import {useDispatch} from "react-redux";
+import {useFetchProductByIdQuery} from "../../../redux/features/products/productsApi";
 
 const SingleProduct = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const { data, error, isLoading } = useFetchProductByIdQuery(id);
+  //if (isLoading) return <div>Loading...</div>;
+  //if (error) return <div>Error loading product...</div>;
+
+  console.log(data);
   return (
     <>
       <section

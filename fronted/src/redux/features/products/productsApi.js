@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { getBaseUrl } from "../../../utils/baseURL";
+
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const productsApi = createApi({
@@ -8,7 +9,7 @@ export const productsApi = createApi({
     baseUrl: `${getBaseUrl()}/api/products`,
     credentials: "include",
   }),
-  TagTypes: ["Products"],
+  tagTypes: ["Products"],
   endpoints: (builder) => ({
     fetchAllProducts: builder.query({
       query: ({
@@ -17,7 +18,7 @@ export const productsApi = createApi({
         minPrice,
         maxPrice,
         page = 1,
-        Limit = 10,
+        limit = 10,
       }) => {
         const queryParams = new URLSearchParams({
           category: category || "",
@@ -25,24 +26,28 @@ export const productsApi = createApi({
           minPrice: minPrice || "",
           maxPrice: maxPrice || "",
           page: page.toString(),
-          limit: Limit.toString(),
+          limit: limit.toString(),
         }).toString();
         return `/?${queryParams}`;
       },
       providesTags: ["Products"],
     }),
-    fetchProductById: (builder) => ({
-      query: (id) => "/${id}",
+    fetchProductById: builder.query({
+      query: (id) => `/${id}`,
       providesTags: (result, error, id) => [{ type: "Products", id }],
     }),
 
-    AddProduct: builder.mutation({
+    addProduct: builder.mutation({
       query: (newProduct) => ({
+          //color,
+          //minPrice,
+          //maxPrice,
         url: "/create-product",
         method: "POST",
         body: newProduct,
         credentials: "include",
       }),
+          //limit: limit.toString(),
       invalidatesTags: ["Products"],
     }),
 
