@@ -1,43 +1,36 @@
 const express = require("express");
-const Products = require("./products.model");
 const mongoose = require("mongoose");
+const Products = require("./products.model");
 const Reviews = require("../reviews/reviews.model");
-const verifyToken = require("../middleware/verifyToken");
-const verifyAdmin = require("../middleware/verifyAdmin");
 const router = express.Router();
-//import  verifyToken  from "./middleware/verifyToken";
 
-// post a product
+// Post a product
 router.post("/create-product", async (req, res) => {
-    try {
-      
+  try {
+    const newProduct = new Products({
+      ...req.body,
+    });
 
-        // Create a new product instance
-        const newProduct = new Products({
-            ...req.body,
-        });
-
-        const savedProduct = await newProduct.save();
-        const reviews = await Reviews.find({ productId: savedProduct._id });
-        if (reviews.length > 0) {
-          const totalRating = reviews.reduce(
-            (acc, review) => acc + review.rating,
-            0
-          );
-          const averageRating = totalRating / reviews.length;
-          savedProduct.rating = averageRating;
-          await savedProduct.save();
-        }
-
-         res.status(201).json(savedProduct);
+    const savedProduct = await newProduct.save();
+    const reviews = await Reviews.find({ productId: savedProduct._id });
+    if (reviews.length > 0) {
+      const totalRating = reviews.reduce(
+        (acc, review) => acc + review.rating,
+        0
+      );
+      const averageRating = totalRating / reviews.length;
+      savedProduct.rating = averageRating;
+      await savedProduct.save();
     }
-    catch (err) {
-        console.error("error creating the new product", error);
-        res.status(500).json({ message: "Failed to create product" });
-        
-    } 
-})
 
+    res.status(201).json(savedProduct);
+  } catch (err) {
+    console.error("Error creating the new product", err);
+    res.status(500).json({ message: "Failed to create product" });
+  }
+});
+
+// Get all products with filters
 router.get("/", async (req, res) => {
   try {
     const {
@@ -84,19 +77,18 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get a product by ID
 router.get("/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).send({ message: "Invalid product ID" });
     }
-    // console.log(postId)
 
     const product = await Products.findById(productId).populate(
       "author",
       "email username"
     );
-    // console.log(post)
 
     if (!product) {
       return res.status(404).send({ message: "Product not found" });
@@ -109,16 +101,15 @@ router.get("/:id", async (req, res) => {
 
     res.status(200).send({ product, reviews });
   } catch (error) {
-    console.error("Error fetching post:", error);
-    res.status(500).send({ message: "Failed to fetch post" });
+    console.error("Error fetching product:", error);
+    res.status(500).send({ message: "Failed to fetch product" });
   }
 });
 
-
-router.patch("/update-product/:id",verifyToken,verifyAdmin, async (req, res) => {
+// Update a product
+router.patch("/update-product/:id", async (req, res) => {
   try {
     const productId = req.params.id;
-    // const { title, content, category } = req.body;
     const updatedProduct = await Products.findByIdAndUpdate(
       productId,
       { ...req.body },
@@ -134,74 +125,66 @@ router.patch("/update-product/:id",verifyToken,verifyAdmin, async (req, res) => 
       product: updatedProduct,
     });
   } catch (error) {
-    console.error("Error fetching product:", error);
-    res.status(500).send({ message: "Failed to fetch product" });
+    console.error("Error updating product:", error);
+    res.status(500).send({ message: "Failed to update product" });
   }
 });
-    
- router.delete("/:id", async (req, res) => {
-   try {
-     const productId = req.params.id;
 
-     // Find and delete the products collection
-     const deletedProduct = await Products.findByIdAndDelete(productId);
+// Delete a product
+router.delete("/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
 
-     if (!deletedProduct) {
-       return res.status(404).send({ message: "Post not found" });
-     }
+    const deletedProduct = await Products.findByIdAndDelete(productId);
 
-     // Delete associated comments
-     await Reviews.deleteMany({ productId: productId });
+    if (!deletedProduct) {
+      return res.status(404).send({ message: "Product not found" });
+    }
 
-     res.status(200).send({
-       message: "Product and associated comments deleted successfully",
-     });
-   } catch (error) {
-     console.error("Error deleting post:", error);
-     res.status(500).send({ message: "Failed to delete post" });
-   }
- });
+    await Reviews.deleteMany({ productId: productId });
 
- // related products
- router.get("/related/:id", async (req, res) => {
-   try {
-     const { id } = req.params;
+    res.status(200).send({
+      message: "Product and associated reviews deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).send({ message: "Failed to delete product" });
+  }
+});
 
-     // Check if id is defined
-     if (!id) {
-       return res.status(400).send({ message: "Product ID is required" });
-     }
+// Get related products
+router.get("/related/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-     // Find the product by ID
-     const product = await Products.findById(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({ message: "Invalid product ID" });
+    }
 
-     if (!product) {
-       return res.status(404).send({ message: "Product not found" });
-     }
+    const product = await Products.findById(id);
 
-     // Create a regex pattern for partial matching of the product name
-     const titleRegex = new RegExp(
-       product.name
-         .split(" ")
-         .filter((word) => word.length > 1)
-         .join("|"),
-       "i"
-     );
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
 
-     // Find related products that match either the name or category, excluding the current product
-     const relatedProducts = await Products.find({
-       _id: { $ne: id }, // Exclude the current product
-       $or: [
-         { name: { $regex: titleRegex } }, // Match similar names
-         { category: product.category }, // Match the same category
-       ],
-     });
+    const titleRegex = new RegExp(
+      product.name
+        .split(" ")
+        .filter((word) => word.length > 1)
+        .join("|"),
+      "i"
+    );
 
-     res.status(200).send(relatedProducts);
-   } catch (error) {
-     console.error("Error fetching related products:", error);
-     res.status(500).send({ message: "Failed to fetch related products" });
-   }
- });   
-    
+    const relatedProducts = await Products.find({
+      _id: { $ne: id },
+      $or: [{ name: { $regex: titleRegex } }, { category: product.category }],
+    });
+
+    res.status(200).send(relatedProducts);
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    res.status(500).send({ message: "Failed to fetch related products" });
+  }
+});
+
 module.exports = router;
