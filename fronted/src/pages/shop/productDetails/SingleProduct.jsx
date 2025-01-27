@@ -84,20 +84,9 @@ const SingleProduct = () => {
           </div>
         </div>
       </section>
-      <section className="section__container mt-8" style={{ width: "80%" }}>
-        <h3 className="text-xl font-semibold mb-4">Reviews</h3>
-        {reviews.length === 0 ? (
-          <p>No reviews yet.</p>
-        ) : (
-          reviews.map((review) => (
-            <div key={review._id} className="mb-4">
-              <p>
-                <strong>{review.userId.username}</strong> - {review.comment}
-              </p>
-              <RatingStars rating={review.rating} />
-            </div>
-          ))
-        )}
+      <section className="section__container mt-8" style={{ width: "85%" }}> 
+        Reviews here
+
       </section>
     </>
   );
