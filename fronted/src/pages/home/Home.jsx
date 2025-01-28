@@ -17,7 +17,7 @@ const Home = () => {
       <DealSection />
       <PromoBanner />
       <Blogs />
-      <Footer/>
+     
     </>
   )
 }
