@@ -3,13 +3,13 @@ const Reviews = require("./reviews.model");
 const Products = require("../products/products.model");
 const router = express.Router();
 
-// post a new review or update a existing review
+// post a new review or update an existing review
 router.post("/post-review", async (req, res) => {
   try {
     const { comment, rating, productId, userId } = req.body;
 
     // Validate request data
-    if (!comment || !rating  || !productId || !userId) {
+    if (!comment || rating === undefined || !productId || !userId) {
       return res.status(400).send({ message: "All fields are required" });
     }
 
@@ -60,42 +60,6 @@ router.post("/post-review", async (req, res) => {
     res
       .status(500)
       .send({ message: "Failed to post review", error: error.message });
-  }
-});
-// total review count
-router.get("/total-reviews", async (req, res) => {
-  try {
-    const totalReviews = await Reviews.countDocuments({});
-    res.status(200).send({ totalReviews });
-  } catch (error) {
-    console.error("Error fetching total comments:", error);
-    res.status(500).send({ message: "Failed to fetch total reviews" });
-  }
-});
-
-// get reviews by user
-router.get("/:userId", async (req, res) => {
-  const { userId } = req.params;
-
-  if (!userId) {
-    return res.status(400).json({ message: "User id is required" });
-  }
-
-  try {
-    const reviews = await Reviews.find({ userId: userId }).sort({
-      createdAt: -1,
-    });
-
-    if (reviews.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No reviews found for this user" });
-    }
-
-    res.status(200).json(reviews);
-  } catch (error) {
-    console.error("Error fetching reviews by user:", error);
-    res.status(500).json({ message: "Failed to fetch reviews" });
   }
 });
 
