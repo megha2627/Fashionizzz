@@ -9,7 +9,7 @@ router.post("/post-review", async (req, res) => {
     const { comment, rating, productId, userId } = req.body;
 
     // Validate request data
-    if (!comment || rating === undefined || !productId || !userId) {
+    if (!comment || !rating  || !productId || !userId) {
       return res.status(400).send({ message: "All fields are required" });
     }
 

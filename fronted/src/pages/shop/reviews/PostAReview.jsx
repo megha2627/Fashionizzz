@@ -109,20 +109,17 @@ const PostReviewModal = ({ isModalOpen, handleClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!comment || rating === 0 || !user?._id || !id) {
-      console.log("Comment:", comment);
-      console.log("Rating:", rating);
-      console.log("User ID:", user?._id);
-      console.log("Product ID:", id);
+   /* if (!comment || rating === 0 || !user?._id || !id) {
       alert("All fields are required");
       return;
-    }
+    }*/
     const newComment = {
       comment: comment,
       rating: rating,
       userId: user?._id,
       productId: id,
     };
+    console.log(newComment); // Check the values of newComment
     try {
       const response = await postReview(newComment).unwrap();
       alert("Comment posted");
