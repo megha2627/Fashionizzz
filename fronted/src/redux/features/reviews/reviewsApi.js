@@ -33,4 +33,4 @@ export const reviewApi = createApi({
   }),
 });
 
-export const { usePostReviewMutation ,useGetReviewsCountQuery,useGetReviewsByUserIdQuery} = reviewApi;
+export  const { usePostReviewMutation ,useGetReviewsCountQuery,useGetReviewsByUserIdQuery} = reviewApi;
