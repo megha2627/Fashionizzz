@@ -1,6 +1,13 @@
 # Women's Fashion Ecommerce Website 👗
 
 A full-stack Women's Fashion Ecommerce Website built using the **MERN** stack (MongoDB, Express.js, React.js, Node.js). The project offers an interactive shopping experience with user login, product listings, cart management, and order placement.
+👗 (dress)
+
+👠 (high heel)
+
+👚 (t-shirt)
+
+👜 (handbag)
 
 ## 🌐 Live Project
 
