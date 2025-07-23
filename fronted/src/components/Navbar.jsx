@@ -80,9 +80,7 @@ const Navbar = () => {
           <li className="link">
             <Link to="/shop">Shop</Link>
           </li>
-          <li className="link">
-            <Link to="/page">Pages</Link>
-          </li>
+          
          
         </ul>
         <div className="nav__logo" style={{ paddingLeft: 150 }}>
